@@ -1,0 +1,25 @@
+{
+  "name": "gitpod-bot",
+  "version": "1.0.0",
+  "description": "A discord bot for https://gitpod.io",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/grimzzz-404/gitpod-bot.git"
+  },
+  "author": "Grim",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/grimzzz-404/gitpod-bot/issues"
+  },
+  "homepage": "https://github.com/grimzzz-404/gitpod-bot#readme",
+  "dependencies": {
+    "discord.js": "^13.3.1",
+    "pino": "^7.2.0",
+    "pino-pretty": "^7.2.0",
+    "redis": "^3.1.2"
+  }
+}
