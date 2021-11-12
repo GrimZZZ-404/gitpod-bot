@@ -28,17 +28,13 @@ client.on('messageCreate', async message => {
             } else {
                 if (reply == message.author.id || message.member.roles.cache.some(role => role.name === authrole)) {
                     try {
+                        await message.channel.setArchived(true);
+                        logger.info(`Archived thread: ${message.channel.name}`);
                         const msg = await message.channel.fetchStarterMessage();
                         await msg.react(reaction);
                     } catch (error) {
                         logger.error(error);
                     }
-                    try {
-                        await message.channel.setArchived(true);
-                    } catch (error) {
-                        logger.error(error);
-                    }
-                    logger.info(`Archived thread: ${message.channel.name}`);
                 } else {
                     await message.reply("Unauthorized");
                 }
@@ -48,8 +44,9 @@ client.on('messageCreate', async message => {
 
     if (channels.indexOf(message.channelId) > -1 && message.content) {
         try {
+            const starter = message.content.substring(0,80)
             const thread = await message.startThread({
-                name: `"❓- "${message.content.substring(0, 50)}`,
+                name: `"❓- "${starter.substring(0, starter.lastIndexOf(" "))}`,
                 autoArchiveDuration: 1440,
                 reason: 'Thread automation'
             });
@@ -57,7 +54,7 @@ client.on('messageCreate', async message => {
                 .addComponents(
                     new MessageButton()
                     .setCustomId('archive')
-                    .setLabel('Archive 🔒')
+                    .setLabel('Archive 🔓')
                     .setStyle('SECONDARY'),
                 );
             db.set(thread.id, message.author.id, async function(err, reply) {
@@ -86,24 +83,19 @@ client.on('threadUpdate', async (thread, thread1) => {
                 .setStyle('SECONDARY'),
             );
         try {
-            const msg = await thread.fetchStarterMessage();
-            await msg.reactions.removeAll();
-        } catch (error) {
-            logger.error(error);
-        }
-        try {
             const newthread = await thread1.fetch()
             if (newthread.archived == false) {
                 await newthread.send({
                     content: 'Thread has been unarchived.',
                     components: [row]
                 });
+                logger.info(`Unarchived thread: ${thread.name}`);
+                const msg = await thread.fetchStarterMessage();
+                await msg.reactions.removeAll();
             }
         } catch (error) {
             logger.error(error);
-
         }
-        logger.info(`Unarchived thread: ${thread.name}`);
     }
 });
 
@@ -123,20 +115,16 @@ client.on('interactionCreate', async interaction => {
             } else {
                 if (reply == interaction.user.id || interaction.member.roles.cache.some(role => role.name === authrole)) {
                     try {
+                        await interaction.update({
+                            components: [row]
+                        });
+                        await interaction.channel.setArchived(true);
+                        logger.info(`Archived thread: ${interaction.channel.name}`);
                         const msg = await interaction.channel.fetchStarterMessage();
                         await msg.react(reaction);
                     } catch (error) {
                         logger.error(error);
                     }
-                    try {
-                        await interaction.update({
-                            components: [row]
-                        });
-                        await interaction.channel.setArchived(true);
-                    } catch (error) {
-                        logger.error(error);
-                    }
-                    logger.info(`Archived thread: ${interaction.channel.name}`);
                 } else {
                     await interaction.reply({
                         content: "Unauthorized",
