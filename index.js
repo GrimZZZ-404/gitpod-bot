@@ -47,7 +47,7 @@ client.on('messageCreate', async message => {
             const starter = message.content.substring(0,80)
             const thread = await message.startThread({
                 name: `"❓- "${starter.substring(0, starter.lastIndexOf(" "))}`,
-                autoArchiveDuration: 4320,
+                autoArchiveDuration: 1440,
                 reason: 'Thread automation'
             });
             const row = new MessageActionRow()
